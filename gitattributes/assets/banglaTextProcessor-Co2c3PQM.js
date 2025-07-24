@@ -1,2 +1,0 @@
-const i=/[\u0980-\u09FF]/,r={"‌":"","‍":""," ":" "},s=t=>i.test(t),o=t=>{if(!t)return"";let e=t;return Object.keys(r).forEach(n=>{e=e.replace(new RegExp(n,"g"),r[n])}),e.normalize&&(e=e.normalize("NFC")),e=e.replace(/\s+/g," ").trim(),e},l=t=>s(t)?"Nikosh":"Times New Roman",c=t=>{const e=o(t),n=l(e),a=s(e);return{text:e,font:n,isBangla:a,size:24,rightToLeft:!1}},g=t=>t.split(`
-`).map(e=>o(e)).filter(e=>e.length>0);export{c as p,g as s};
