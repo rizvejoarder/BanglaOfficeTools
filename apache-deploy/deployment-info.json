@@ -1,0 +1,33 @@
+{
+  "buildDate": "2025-07-24T12:34:48.520Z",
+  "version": "0.0.0",
+  "environment": "production",
+  "server": "Apache",
+  "features": [
+    "Bengali Office Tools",
+    "AI Assistant with Multi-Provider Support",
+    "Document Templates (50+)",
+    "File Upload and Analysis",
+    "Responsive Design",
+    "PWA Ready"
+  ],
+  "apiProviders": [
+    "Google Gemini",
+    "OpenAI ChatGPT",
+    "HuggingFace",
+    "OpenRouter",
+    "Anthropic Claude"
+  ],
+  "requirements": {
+    "php": "Not required",
+    "database": "Not required",
+    "apache_modules": [
+      "mod_rewrite",
+      "mod_headers",
+      "mod_deflate",
+      "mod_expires",
+      "mod_mime"
+    ],
+    "environment_variables": "Set API keys in .env file"
+  }
+}

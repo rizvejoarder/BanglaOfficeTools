@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ছবি থেকে ওয়ার্ড (বিজয় ইউনিকোড) - Simple Test</title>
+    <style>
+        @font-face {
+            font-family: 'Nikosh';
+            src: url('https://fonts.gstatic.com/s/nikosh/v2/7cHsv4U4vJ-Cc8iRlGPgBw.woff2') format('woff2');
+            font-display: swap;
+        }
+        
+        body {
+            font-family: 'Nikosh', 'Kalpurush', sans-serif;
+            margin: 20px;
+            background: #f5f6fa;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        .upload-section {
+            border: 2px dashed #3498db;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-section:hover {
+            border-color: #2980b9;
+            background: #f8f9fa;
+        }
+        
+        .upload-section.dragover {
+            border-color: #27ae60;
+            background: #e8f5e8;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .upload-btn {
+            background: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .upload-btn:hover {
+            background: #2980b9;
+        }
+        
+        .progress {
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .result {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .result-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+            white-space: pre-wrap;
+            font-family: 'Nikosh', monospace;
+            line-height: 1.8;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .download-btn {
+            background: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        
+        .download-btn:hover {
+            background: #2ecc71;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ছবি থেকে ওয়ার্ড (বিজয় ইউনিকোড OCR)</h1>
+        
+        <div class="upload-section" onclick="document.getElementById('imageInput').click()">
+            <div style="font-size: 48px; margin-bottom: 15px;">📷</div>
+            <div style="font-size: 18px; margin-bottom: 10px;">
+                এখানে ক্লিক করুন অথবা ছবি ড্র্যাগ করুন
+            </div>
+            <div style="color: #7f8c8d;">
+                সমর্থিত ফরম্যাট: JPG, PNG, WEBP
+            </div>
+            <button class="upload-btn">
+                ফাইল নির্বাচন করুন
+            </button>
+        </div>
+        
+        <input type="file" id="imageInput" accept="image/*" onchange="processImage(this.files[0])">
+        
+        <div class="progress" id="progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">প্রক্রিয়াকরণ শুরু হচ্ছে...</div>
+        </div>
+        
+        <div class="result" id="result">
+            <h3>📋 OCR ফলাফল (বিজয় ইউনিকোড):</h3>
+            <div class="result-content" id="resultContent"></div>
+            <button class="download-btn" onclick="downloadAsWord()">📄 Word ডাউনলোড</button>
+            <button class="download-btn" onclick="copyToClipboard()">📋 কপি করুন</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { convertImageToWord } from './src/utils/index.js';
+        
+        // Drag and drop functionality
+        const uploadSection = document.querySelector('.upload-section');
+        
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+        
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('dragover');
+        });
+        
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processImage(files[0]);
+            }
+        });
+        
+        window.processImage = async function(file) {
+            if (!file) return;
+            
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                showError('অনুগ্রহ করে একটি বৈধ ছবি ফাইল নির্বাচন করুন।');
+                return;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                showError('ফাইলের আকার 10MB এর কম হতে হবে।');
+                return;
+            }
+            
+            showProgress('প্রাথমিক প্রস্তুতি চলছে...', 0);
+            
+            try {
+                console.log('Starting OCR processing...');
+                const result = await convertImageToWord(file, updateProgress);
+                console.log('OCR Result:', result);
+                displayResult(result);
+            } catch (error) {
+                console.error('OCR Error:', error);
+                showError('OCR প্রক্রিয়াকরণে ত্রুটি: ' + error.message);
+            }
+        };
+        
+        function updateProgress(message, percentage = null) {
+            const progressDiv = document.getElementById('progress');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            progressDiv.style.display = 'block';
+            progressText.textContent = message;
+            
+            if (percentage !== null) {
+                progressFill.style.width = percentage + '%';
+            }
+        }
+        
+        function showProgress(message, percentage) {
+            updateProgress(message, percentage);
+        }
+        
+        function displayResult(result) {
+            // Hide progress
+            document.getElementById('progress').style.display = 'none';
+            
+            // Show result
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('resultContent').textContent = result;
+            
+            // Show success message
+            showSuccess('OCR প্রক্রিয়াকরণ সফলভাবে সম্পন্ন হয়েছে!');
+        }
+        
+        window.downloadAsWord = function() {
+            const resultText = document.getElementById('resultContent').textContent;
+            if (!resultText) {
+                showError('ডাউনলোডের জন্য কোন টেক্সট নেই।');
+                return;
+            }
+            
+            // Create a simple text file for now
+            const blob = new Blob([resultText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ocr-result.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showSuccess('ফাইল ডাউনলোড শুরু হয়েছে!');
+        };
+        
+        window.copyToClipboard = function() {
+            const resultText = document.getElementById('resultContent').textContent;
+            
+            navigator.clipboard.writeText(resultText).then(() => {
+                showSuccess('টেক্সট সফলভাবে কপি করা হয়েছে!');
+            }).catch(() => {
+                showError('টেক্সট কপি করতে ব্যর্থ।');
+            });
+        };
+        
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.querySelector('.container').insertBefore(errorDiv, document.querySelector('.upload-section'));
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            document.querySelector('.container').insertBefore(successDiv, document.querySelector('.upload-section'));
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

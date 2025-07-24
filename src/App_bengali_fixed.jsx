@@ -1,12 +1,16 @@
+//BanglaOfficeTools - AI CHATBOT INTEGRATION - 2025-07-24 17:25
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FileText, Download, Upload, Zap, Shield, Users, 
   CheckCircle, ArrowRight, Star, Globe, Clock, Database,
   FileImage, Image, FileX, Mail, Share2, MessageCircle, X,
-  Camera, File, FilePlus, FileOutput, FileEdit, PenTool
+  Camera, File, FilePlus, FileOutput, FileEdit, PenTool,
+  ImageIcon, ScanLine, FileDown, FileUp, Layers, Copy, Bot
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import AIBotChat from './components/AIBotChat';
+import AIAssistantPage from './components/AIAssistantPage';
 
 const BengaliOfficeTools = () => {
   const [processing, setProcessing] = useState({});
@@ -16,15 +20,17 @@ const BengaliOfficeTools = () => {
   const [error, setError] = useState({});
   const [activeModal, setActiveModal] = useState(null); // For popup system
   const [currentTool, setCurrentTool] = useState(null);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false); // AI Chatbot state
+  const [currentView, setCurrentView] = useState('home'); // 'home' or 'ai-assistant'
 
   // Main Bengali features from readme.md
   const bengaliTools = [
     {
       id: 'image-to-word',
-      title: '📷 ছবি থেকে ওয়ার্ড',
+      title: 'ছবি থেকে ওয়ার্ড',
       subtitle: 'প্রধান ফিচার - AI-Enhanced OCR',
       description: 'বাংলা ছবি থেকে সম্পাদনাযোগ্য Word ডকুমেন্ট - 99%+ নির্ভুলতা',
-      icon: <Camera className="w-8 h-8 text-white" />,
+      icon: <ScanLine className="w-8 h-8 text-black font-bold" />,
       gradient: 'from-blue-500 to-indigo-600',
       accept: '.jpg,.jpeg,.png,.webp',
       multiple: false,
@@ -45,10 +51,10 @@ const BengaliOfficeTools = () => {
     },
     {
       id: 'pdf-to-image',
-      title: '📄 PDF থেকে ছবি',
+      title: 'PDF থেকে ছবি',
       subtitle: '4K রেজোলিউশন সাপোর্ট',
       description: 'PDF ফাইলকে উচ্চ মানের ছবিতে রূপান্তর - 4K রেজোলিউশন সাপোর্ট',
-      icon: <FileImage className="w-8 h-8 text-white" />,
+      icon: <ImageIcon className="w-8 h-8 text-black font-bold" />,
       gradient: 'from-green-500 to-emerald-600',
       accept: '.pdf',
       multiple: false,
@@ -60,7 +66,7 @@ const BengaliOfficeTools = () => {
         'ফাস্ট রেন্ডারিং'
       ],
       instructions: [
-        'সবুজ গ্রেডিয়েন্ট "📄 PDF থেকে ছবি" কার্ডে ক্লিক করুন',
+        'সবুজ গ্রেডিয়েন্ট "PDF থেকে ছবি" কার্ডে ক্লিক করুন',
         'PDF ফাইল আপলোড করুন',
         'রেজোলিউশন সেটিংস নির্বাচন করুন',
         'রূপান্তর প্রক্রিয়া সম্পন্ন হওয়ার জন্য অপেক্ষা করুন',
@@ -69,10 +75,10 @@ const BengaliOfficeTools = () => {
     },
     {
       id: 'images-to-pdf',
-      title: '🖼️ ছবি থেকে PDF',
+      title: 'ছবি থেকে PDF',
       subtitle: 'AI লেআউট অপটিমাইজেশন',
       description: 'একাধিক ছবিকে একটি PDF ডকুমেন্টে রূপান্তর - AI-powered layout',
-      icon: <FilePlus className="w-8 h-8 text-white" />,
+      icon: <Layers className="w-8 h-8 text-black font-bold" />,
       gradient: 'from-purple-500 to-pink-600',
       accept: '.jpg,.jpeg,.png,.webp',
       multiple: true,
@@ -84,7 +90,7 @@ const BengaliOfficeTools = () => {
         'ড্র্যাগ ড্রপ অর্ডারিং'
       ],
       instructions: [
-        'গোলাপী গ্রেডিয়েন্ট "🖼️ ছবি থেকে PDF" কার্ডে ক্লিক করুন',
+        'গোলাপী গ্রেডিয়েন্ট "ছবি থেকে PDF" কার্ডে ক্লিক করুন',
         'একাধিক ছবি নির্বাচন করুন বা ড্র্যাগ ড্রপ করুন',
         'ছবির ক্রম সাজান (ড্র্যাগ করে)',
         'লেআউট এবং সেটিংস কনফিগার করুন',
@@ -93,10 +99,10 @@ const BengaliOfficeTools = () => {
     },
     {
       id: 'pdf-to-word',
-      title: '📄 PDF থেকে ওয়ার্ড',
+      title: 'PDF থেকে ওয়ার্ড',
       subtitle: 'উন্নত লেআউট সংরক্ষণ',
       description: 'PDF ডকুমেন্টকে সম্পাদনাযোগ্য Word ফাইলে রূপান্তর',
-      icon: <FileOutput className="w-8 h-8 text-white" />,
+      icon: <FileDown className="w-8 h-8 text-black font-bold" />,
       gradient: 'from-orange-500 to-red-600',
       accept: '.pdf',
       multiple: false,
@@ -108,7 +114,7 @@ const BengaliOfficeTools = () => {
         'হেডার ফুটার'
       ],
       instructions: [
-        'কমলা গ্রেডিয়েন্ট "📄 PDF থেকে ওয়ার্ড" কার্ডে ক্লিক করুন',
+        'কমলা গ্রেডিয়েন্ট "PDF থেকে ওয়ার্ড" কার্ডে ক্লিক করুন',
         'PDF ফাইল আপলোড করুন',
         'কনভার্শন অপশন সিলেক্ট করুন',
         'প্রক্রিয়াকরণ সম্পন্ন হওয়ার জন্য অপেক্ষা করুন',
@@ -117,10 +123,10 @@ const BengaliOfficeTools = () => {
     },
     {
       id: 'word-to-pdf',
-      title: '📝 ওয়ার্ড থেকে PDF',
+      title: 'ওয়ার্ড থেকে PDF',
       subtitle: 'প্রফেশনাল PDF জেনারেশন',
       description: 'Word ডকুমেন্টকে উচ্চ মানের PDF এ রূপান্তর',
-      icon: <FileEdit className="w-8 h-8 text-white" />,
+      icon: <FileUp className="w-8 h-8 text-black font-bold" />,
       gradient: 'from-teal-500 to-cyan-600',
       accept: '.doc,.docx',
       multiple: false,
@@ -132,7 +138,7 @@ const BengaliOfficeTools = () => {
         'কমপ্রেশন অপশন'
       ],
       instructions: [
-        'সায়ান গ্রেডিয়েন্ট "📝 ওয়ার্ড থেকে PDF" কার্ডে ক্লিক করুন',
+        'সায়ান গ্রেডিয়েন্ট "ওয়ার্ড থেকে PDF" কার্ডে ক্লিক করুন',
         'Word ডকুমেন্ট আপলোড করুন',
         'PDF সেটিংস কনফিগার করুন',
         'সিকিউরিটি অপশন সেট করুন (যদি প্রয়োজন হয়)',
@@ -585,6 +591,11 @@ const BengaliOfficeTools = () => {
     );
   };
 
+  // Handle view switching
+  if (currentView === 'ai-assistant') {
+    return <AIAssistantPage onBack={() => setCurrentView('home')} />;
+  }
+
   return (
     <div className="min-h-screen">
       {/* Modal */}
@@ -611,6 +622,37 @@ const BengaliOfficeTools = () => {
               <li><a href="#images-to-pdf" className="nav-link">ছবি থেকে PDF</a></li>
               <li><a href="#pdf-to-word" className="nav-link">PDF থেকে ওয়ার্ড</a></li>
               <li><a href="#word-to-pdf" className="nav-link">ওয়ার্ড থেকে PDF</a></li>
+              <li>
+                <button
+                  onClick={() => setCurrentView('ai-assistant')}
+                  className="nav-link ai-bot-button"
+                  style={{ 
+                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.3)';
+                  }}
+                >
+                  <Bot className="w-4 h-4" />
+                  AI সহায়ক
+                </button>
+              </li>
             </ul>
           </div>
         </nav>
@@ -684,7 +726,12 @@ const BengaliOfficeTools = () => {
           <div className="container">
             <div className="service-layout">
               <div className="service-info">
-                <h2 className="service-main-title">{tool.title}</h2>
+                <div className="service-title-with-icon">
+                  <div className={`service-title-icon bg-gradient-to-r ${tool.gradient}`}>
+                    {tool.icon}
+                  </div>
+                  <h2 className="service-main-title">{tool.title}</h2>
+                </div>
                 <p className="service-main-subtitle">{tool.description}</p>
                 
                 <div className="feature-list">
@@ -696,12 +743,12 @@ const BengaliOfficeTools = () => {
                   ))}
                 </div>
                 
-                <h3 style={{marginTop: '2rem', marginBottom: '1rem', fontSize: '1.25rem', fontWeight: '600'}}>
+                <h3 style={{marginTop: '1.5rem', marginBottom: '0.75rem', fontSize: '1.25rem', fontWeight: '600'}}>
                   ব্যবহারের নির্দেশনা:
                 </h3>
                 <ol style={{paddingLeft: '1.5rem', color: '#6b7280'}}>
                   {tool.instructions.map((instruction, idx) => (
-                    <li key={idx} style={{marginBottom: '0.5rem'}}>{instruction}</li>
+                    <li key={idx} style={{marginBottom: '0.25rem', lineHeight: '1.4'}}>{instruction}</li>
                   ))}
                 </ol>
               </div>
@@ -825,6 +872,39 @@ const BengaliOfficeTools = () => {
           </div>
         </div>
       </footer>
+
+      {/* AI Chatbot */}
+      <AIBotChat 
+        isOpen={isAIChatOpen} 
+        onClose={() => setIsAIChatOpen(false)} 
+      />
+
+      {/* Floating AI Assistant Button */}
+      {!isAIChatOpen && (
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 2, duration: 0.5 }}
+          onClick={() => setCurrentView('ai-assistant')}
+          className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 z-50 flex items-center justify-center group"
+          style={{
+            boxShadow: '0 8px 32px rgba(139, 92, 246, 0.4)'
+          }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Bot className="w-7 h-7 group-hover:animate-pulse" />
+          
+          {/* Floating tooltip */}
+          <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+            বাংলাদেশী AI সহায়ক
+            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+          </div>
+
+          {/* Animated ring */}
+          <div className="absolute inset-0 rounded-full border-2 border-white opacity-20 animate-ping"></div>
+        </motion.button>
+      )}
     </div>
   );
 };

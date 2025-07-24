@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:deploy": "vite build && node scripts/build-deploy.js",
+    "build:apache": "node scripts/apache-deploy.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "node test-app.js"
@@ -24,7 +26,7 @@
     "pdfjs-dist": "3.11.174",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hot-toast": "^2.4.1",
+    "react-hot-toast": "^2.5.2",
     "react-intersection-observer": "^9.10.2",
     "tesseract.js": "^5.0.3"
   },
@@ -38,6 +40,7 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "fs-extra": "^11.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11",
     "vite": "^5.2.0"
