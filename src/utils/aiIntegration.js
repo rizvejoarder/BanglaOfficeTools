@@ -428,19 +428,5 @@ export const detectDocumentType = (text) => {
   return 'general';
 };
 
-// Create the main aiIntegration object
-const aiIntegration = {
-  callGeminiAPI,
-  callOpenAIAPI,
-  callHuggingFaceAPI,
-  callOpenRouterAPI,
-  callClaudeAPI,
-  getAIResponse,
-  processUploadedFile,
-  detectDocumentType,
-  DOCUMENT_TEMPLATES,
-  SYSTEM_PROMPTS
-};
-
-// Export templates for use in components
-export { DOCUMENT_TEMPLATES, SYSTEM_PROMPTS, aiIntegration };
+// Export templates and constants for use in components
+export { DOCUMENT_TEMPLATES, SYSTEM_PROMPTS };

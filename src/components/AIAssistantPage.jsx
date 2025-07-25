@@ -9,7 +9,7 @@ import {
   ChevronDown, ChevronUp, Search, Filter, MoreVertical
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { aiIntegration } from '../utils/aiIntegration';
+import { getAIResponse } from '../utils/aiIntegration';
 import aiFileStorage from '../utils/aiFileStorage';
 import { getTemplatesByCategory, searchTemplates } from '../utils/bangladeshiTemplates';
 
@@ -172,10 +172,7 @@ const AIAssistantPage = ({ onBack }) => {
 
   const simulateAIResponse = async (message, files, provider) => {
     try {
-      // Import the AI integration utility
-      const { getAIResponse } = await import('../utils/aiIntegration');
-      
-      // Get real AI response
+      // Get real AI response using imported function
       const response = await getAIResponse(message, files, provider);
       return response;
     } catch (error) {
